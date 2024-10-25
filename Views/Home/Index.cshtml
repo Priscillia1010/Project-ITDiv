@@ -1,0 +1,168 @@
+﻿@using Microsoft.AspNetCore.Http
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<header>
+    <nav class="navbar">
+        <div class="left-nav">
+            <button id="toggleMenu" onclick="toggleMenu()">☰</button>
+            <h2 class="logo">RentCar</h2>
+        </div>
+        <div class="right-nav">
+            <a href="@Url.Action("Login", "Auth")" class="login-btn">Login</a>
+            <a href="@Url.Action("Register", "Auth")" class="register-btn">Register</a>
+        </div>
+    </nav>
+</header>
+
+<aside id="sideMenu" class="side-menu hidden">
+        <button id="closeMenu" onclick="hideMenu()">x</button>
+        <ul>
+            <li>
+                <a href="@Url.Action("Index", "Home")" onclick="hideMenu()">Home</a>
+            </li>
+            <li>
+                <a href="#">Riwayat Penyewaan</a>
+            </li>
+            <li>
+                <a href="#">Kontak Kami</a>
+            </li>
+        </ul>
+</aside>
+
+<div class="main-content">
+    <h3>Selamat Datang di Rental Mobil Kami</h3>
+    <section class="search-section">
+        <form id="searchForm">
+            <div class="input-tgl">
+                <label for="rentalDate">Pickup Date:</label>
+                <input type="date" id="rentalDate" name="rentalDate" required>
+            </div>
+
+            <div class="input-tgl">
+                <label for="returnDate">Return Date:</label>
+                <input type="date" id="returnDate" name="returnDate" required>
+            </div>
+
+            <div class="input-tgl">
+                <label for="year">Filter Tahun Pembuatan</label>
+                <select name="year" id="year">
+                    <option value="">Semua Tahun</option>
+                    <script>
+                        for (let year = 1990; year <= 2024; year++) {
+                            document.write(`<option value="${year}">${year}</option>`);
+                        }
+                    </script>
+                </select>
+            </div>
+
+            <button type="submit">Cari</button>
+        </form>
+    </section>
+
+    <div id="result" class="result-section">
+
+    </div>
+</div>
+
+<footer>
+    <p>&copy; 2024 RentCar App. Semua Hak Dilindungi</p>
+</footer>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    function toggleMenu() {
+        const sideMenu = document.getElementById('sideMenu');
+        sideMenu.classList.toggle('hidden');
+        console.log("test")
+    }
+
+    function hideMenu() {
+        const sideMenu = document.getElementById('sideMenu');
+        sideMenu.classList.add('hidden');
+        console.log("hide")
+    }
+
+    $(document).ready(function () {
+        $('#searchForm').submit(function (event) {
+            event.preventDefault(); // Prevent the default form submission
+            console.log("Form submitted!"); // Check if this logs when the form is submitted
+
+            const rentalDate = $('#rentalDate').val();
+            const returnDate = $('#returnDate').val();
+            const filterYear = $('#year').val();
+
+            $.ajax({
+                url: '/Car/AvailableCars', // Corrected 'URL' to 'url'
+                type: 'GET', // Corrected 'typeof' to 'type'
+                data: {
+                    pickupDate: rentalDate,
+                    returnDate: returnDate,
+                    filterYear: filterYear
+                },
+                success: function (data) {
+                    console.log("Response data:", data);
+                    $('#results').empty(); // Corrected to use '#' for ID
+
+                    if (Array.isArray(data) && data.length > 0) { // Ensure it's an array and has items
+                        data.forEach(car => {
+                            const carHtml = `
+                                <div class="car-item">
+                                    <img src="${car.MsCarImages[0].imageUrl}" alt="${car.carName}" />
+                                    <h4>${car.carName}</h4>
+                                    <p>Harga per hari: ${car.pricePerDay}</p>
+                                    <button class="sewa-btn">Sewa Sekarang</button>
+                                </div>
+                            `;
+                            $('#results').append(carHtml);
+                        });
+                    } else {
+                        $('#results').html('<p>Tidak ada mobil yang tersedia.</p>');
+                        console.error("Expected an array, but got:", data);
+                    }
+                },
+                error: function () {
+                    $('#results').html('<p>Terjadi kesalahan saat mengambil data mobil.</p>');
+                }
+            });
+        });
+    });
+</script>
+
+<style>
+    .results-section {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+    }
+
+    .car-item {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 15px;
+        text-align: center;
+        width: 200px;
+        background-color: #fff;
+    }
+
+        .car-item img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+    .sewa-btn {
+        background-color: #fac0d8;
+        color: #fff;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+        .sewa-btn:hover {
+            background-color: #e6c9f7;
+        }
+</style>

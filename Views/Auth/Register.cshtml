@@ -1,0 +1,41 @@
+﻿
+@model RentalCar.Views.Auth.RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RentCar</title>
+    <link rel="stylesheet" href="/css/login.css">
+</head>
+<body>
+    <div class="form-container">
+        <form id="registerForm">
+            <h2>Registrasi ke RentCar</h2>
+            <label for="username">Username</label>
+            <input type="text" id="username" placeholder="Masukan username Anda">
+            <label for="email">Email</label>
+            <input type="text" id="email" placeholder="Masukan email Anda">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Masukan password Anda">
+            <label for="re-password">Re-Password</label>
+            <input type="re-password" id="re-password" placeholder="Masukan kembali password Anda">
+            <label for="email">Email</label>
+            <input type="text" id="email" placeholder="Masukan email Anda">
+            <label for="alamat">Alamat</label>
+            <input type="text" id="alamat" placeholder="Masukan alamat Anda">
+            <button>Registrasi</button>
+            <p>Sudah punya akun? Login <a href="@Url.Action("Login", "Auth")">disini</a></p>
+
+            @if (ViewBag.ErrorMessage != null)
+            {
+                <p style="color:red;">@ViewBag.ErrorMessage</p>
+            }
+        </form>
+    </div>
+</body>
+</html>
